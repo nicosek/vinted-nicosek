@@ -1,3 +1,3 @@
-# Vinted by Nicolas Sekri
+# Vinted Backend by Nicolas Sekri
 
 Add description here.
