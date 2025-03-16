@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const OfferController = require("../controllers/offer_controller");
+const Offer = require("../models/Offer");
 const isAuthenticated = require("../middlewares/is_authenticated");
+const authorize = require("../middlewares/authorize");
 const asyncHandler = require("../middlewares/async_handler");
 const fileUpload = require("express-fileupload")({
   useTempFiles: true,
@@ -19,9 +21,15 @@ router.post(
 router.put(
   "/:id",
   isAuthenticated,
+  authorize(Offer, "update"),
   fileUpload,
   asyncHandler(OfferController.update)
 );
-router.delete("/:id", isAuthenticated, asyncHandler(OfferController.delete));
+router.delete(
+  "/:id",
+  isAuthenticated,
+  authorize(Offer, "delete"),
+  asyncHandler(OfferController.delete)
+);
 
 module.exports = router;

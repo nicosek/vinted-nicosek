@@ -4,6 +4,7 @@ const { NotFoundError } = require("./utils/errors");
 const UserController = require("./controllers/user_controller");
 const asyncHandler = require("./middlewares/async_handler");
 const connectToDatabase = require("./config/database");
+const cors = require("cors");
 
 // Import des routes
 const userRoutes = require("./routes/user");
@@ -12,6 +13,7 @@ const offerRoutes = require("./routes/offer");
 // Création de l'application Express
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Gestion des routes
 app.use("/users", userRoutes);

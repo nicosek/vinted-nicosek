@@ -15,7 +15,7 @@ const authorize = (Model, action) => {
       return next(new ForbiddenError()); // 🔥 Erreur 403
     }
 
-    next(); // 🎯 Tout est validé, on passe à l'action suivante
+    next();
   };
 };
 
