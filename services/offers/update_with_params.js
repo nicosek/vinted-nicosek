@@ -1,7 +1,7 @@
 const { uploadImage, deleteImage } = require("../../utils/cloudinary");
-const formatOffer = require("../../utils/format_offer");
 const { mapProductDetails } = require("../../utils/offer_helpers");
 const { mergeProductDetails } = require("../../utils/product_helpers");
+const OfferShowSerializer = require("../../serializers/offers/offer_show_serializer");
 
 const updateWithParams = async (offer, filteredBody, req) => {
   const mappedDetails = mapProductDetails(filteredBody);
@@ -34,7 +34,7 @@ const updateWithParams = async (offer, filteredBody, req) => {
   }
 
   await offer.save();
-  const response = formatOffer(offer);
+  const response = new OfferShowSerializer(populatedOffer).serialize();
   if (pictureUploadErrorMessage)
     response.picture_upload_error = pictureUploadErrorMessage;
 

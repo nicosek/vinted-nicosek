@@ -1,6 +1,5 @@
 const Offer = require("../models/Offer");
 const { deleteImage } = require("../utils/cloudinary");
-const formatOffer = require("../utils/format_offer");
 const _ = require("lodash");
 const { NotFoundError, ForbiddenError } = require("../utils/errors");
 const createWithParams = require("../services/offers/create_with_params");

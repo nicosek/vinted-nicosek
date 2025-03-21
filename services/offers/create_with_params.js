@@ -1,7 +1,7 @@
 const Offer = require("../../models/Offer");
 const { uploadImage } = require("../../utils/cloudinary");
-const formatOffer = require("../../utils/format_offer");
 const { mapProductDetails } = require("../../utils/offer_helpers");
+const OfferShowSerializer = require("../../serializers/offers/offer_show_serializer");
 
 const createWithParams = async (filteredBody, req) => {
   // On crée l'offer sans l'image à partir des infos du body filtrées par le controller
@@ -39,7 +39,7 @@ const createWithParams = async (filteredBody, req) => {
     .populate("owner", "account.username account.avatar _id")
     .select("-__v");
 
-  const response = formatOffer(populatedOffer);
+  const response = new OfferShowSerializer(populatedOffer).serialize();
   if (pictureUploadErrorMessage)
     response.picture_upload_error = pictureUploadErrorMessage;
 
