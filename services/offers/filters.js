@@ -7,15 +7,11 @@ const buildFilters = ({ title, priceMin, priceMax, status }) => {
   if (status) {
     if (status === "available") {
       filters.$or = [
-        { transaction: { $exists: false } },
-        { transaction: null },
-        {
-          transaction: { $exists: true },
-          transactionStatus: { $exists: true, $ne: "succeeded" },
-        },
+        { transaction: null }, // ✅ Cas où l'offre n'a jamais eu de transaction
+        { "transaction.status": { $ne: "succeeded" } }, // ✅ Cas où la transaction existe mais n'est pas "succeeded"
       ];
     } else if (status === "sold") {
-      filters.transactionStatus = "succeeded";
+      filters["transaction.status"] = "succeeded";
     }
   }
 

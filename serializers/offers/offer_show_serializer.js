@@ -4,7 +4,7 @@ class OfferShowSerializer extends BaseOfferSerializer {
   serialize() {
     const serialized = super.serialize();
     serialized.is_pending =
-      this.offer.transaction && this.offer.transaction.status !== "succeeded";
+      !!this.offer.transaction && this.offer.transaction.status !== "succeeded";
 
     delete serialized.transaction;
 
