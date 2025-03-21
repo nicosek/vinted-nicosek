@@ -9,8 +9,11 @@ const offerTransactionAggregation = [
   },
   {
     $addFields: {
-      transactionStatus: { $arrayElemAt: ["$transactionData.status", 0] },
+      "transaction.status": { $arrayElemAt: ["$transactionData.status", 0] },
     },
+  },
+  {
+    $unset: "transactionData",
   },
 ];
 
@@ -27,6 +30,9 @@ const offerOwnerAggregation = [
     $addFields: {
       owner: { $arrayElemAt: ["$ownerData", 0] },
     },
+  },
+  {
+    $unset: "ownerData",
   },
 ];
 

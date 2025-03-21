@@ -43,10 +43,9 @@ const OfferSchema = new mongoose.Schema(
   baseSchemaOptions
 );
 
-// 📌 Virtual field "status" basé sur transaction.status
-OfferSchema.virtual("status").get(function () {
-  return this.transaction?.status === "succeeded" ? "sold" : "available";
-});
+OfferSchema.statics.status = function (transactionStatus) {
+  return transactionStatus === "succeeded" ? "sold" : "available";
+};
 
 const Offer = mongoose.model("Offer", OfferSchema);
 module.exports = Offer;

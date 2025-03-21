@@ -1,4 +1,5 @@
 const { snakeCaseKeys } = require("../../utils/format");
+const Offer = require("../../models/Offer");
 
 class BaseOfferSerializer {
   constructor(offer) {
@@ -7,23 +8,19 @@ class BaseOfferSerializer {
 
   // ✅ Supprime les champs indésirables de l'offre
   cleanOffer() {
-    const fieldsToRemove = [
-      "__v",
-      "createdAt",
-      "updatedAt",
-      "transactionData",
-      "ownerData",
-    ];
+    const fieldsToRemove = ["v", "created_at", "updated_at"];
     fieldsToRemove.forEach((field) => delete this.offer[field]);
   }
 
   serialize() {
-    this.cleanOffer();
-    return {
+    this.offer = {
       ...snakeCaseKeys(this.offer),
       product_details: this.formatProductDetails(),
       owner: this.formatOwner(),
+      status: Offer.status(this.offer.transaction?.status),
     };
+    this.cleanOffer();
+    return this.offer;
   }
 
   formatProductDetails() {
@@ -34,10 +31,11 @@ class BaseOfferSerializer {
   }
 
   formatOwner() {
-    return this.offer.owner
+    const owner = this.offer.owner;
+    return owner
       ? {
-          id: this.offer.owner._id,
-          username: this.offer.owner.account.username,
+          id: owner._id,
+          username: owner.account.username,
         }
       : null;
   }
