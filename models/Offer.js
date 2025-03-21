@@ -39,7 +39,6 @@ const OfferSchema = new mongoose.Schema(
     },
     transaction: { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } }, // ✅ Active les virtuals dans les JSON
   baseSchemaOptions
 );
 
