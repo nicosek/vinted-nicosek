@@ -35,7 +35,7 @@ class BaseOfferSerializer {
     return owner
       ? {
           id: owner._id,
-          owner: { username: owner.account.username },
+          account: { username: owner.account.username },
         }
       : null;
   }
