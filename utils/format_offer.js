@@ -1,20 +1,27 @@
 const { snakeCaseKeys } = require("../utils/format");
 
 const formatOffer = (offer) => {
-  const formattedOffer = offer.toObject(); // Convertit en objet JS natif
-
   // 🔄 Transformation des `product_details` en objet `{ key: value }`
-  const formattedDetails = formattedOffer.productDetails.reduce(
-    (acc, detail) => {
-      acc[detail.key] = detail.value;
-      return acc;
-    },
-    {}
-  );
+  const formattedDetails = offer.productDetails.reduce((acc, detail) => {
+    acc[detail.key] = detail.value;
+    return acc;
+  }, {});
+
+  // 🔥 Définition du champ `status`
+  const status = offer.transactionStatus
+    ? offer.transactionStatus === "succeeded"
+      ? "sold"
+      : "available"
+    : "unknown";
+
+  // ❌ Supprime les champs inutiles
+  delete offer.transaction;
+  delete offer.transactionStatus;
 
   return {
-    ...snakeCaseKeys(formattedOffer),
+    ...snakeCaseKeys(offer),
     product_details: formattedDetails,
+    status, // ✅ Ajoute `status` directement
   };
 };
 

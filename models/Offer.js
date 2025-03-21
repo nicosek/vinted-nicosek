@@ -37,9 +37,16 @@ const OfferSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    transaction: { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
   },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } }, // ✅ Active les virtuals dans les JSON
   baseSchemaOptions
 );
+
+// 📌 Virtual field "status" basé sur transaction.status
+OfferSchema.virtual("status").get(function () {
+  return this.transaction?.status === "succeeded" ? "sold" : "available";
+});
 
 const Offer = mongoose.model("Offer", OfferSchema);
 module.exports = Offer;

@@ -31,5 +31,10 @@ router.delete(
   authorize(Offer, "delete"),
   asyncHandler(OfferController.delete)
 );
+router.post(
+  "/:id/initiate_payment",
+  isAuthenticated,
+  asyncHandler(OfferController.initiatePayment)
+);
 
 module.exports = router;
