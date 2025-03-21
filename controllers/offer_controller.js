@@ -6,6 +6,10 @@ const { NotFoundError, ForbiddenError } = require("../utils/errors");
 const createWithParams = require("../services/offers/create_with_params");
 const updateWithParams = require("../services/offers/update_with_params");
 const fetchFilteredOffers = require("../services/offers/fetch_filtered_offers");
+const initiatePaymentForOffer = require("../services/payments/initiate_payment_for_offer");
+const OfferIndexSerializer = require("../serializers/offers/offer_index_serializer");
+const OfferShowSerializer = require("../serializers/offers/offer_show_serializer");
+const OfferPaginate = require("../services/pagination/offer_paginate");
 
 // Champs envoyés par le front
 const allowedFieldsForCreate = [
@@ -31,8 +35,15 @@ const OfferController = {
 
   // ** Index (GET /offers)**
   index: async (req, res) => {
-    const offersData = await fetchFilteredOffers(req.query);
-    res.status(200).json(offersData);
+    const offers = await fetchFilteredOffers(req.query);
+    const paginationData = await new OfferPaginate(offers, req.query).call();
+
+    res.status(200).json({
+      ...paginationData,
+      offers: offers.map((offer) =>
+        new OfferIndexSerializer(offer).serialize()
+      ),
+    });
   },
 
   // ** Delete (DELETE /offers/:id)**
@@ -58,11 +69,11 @@ const OfferController = {
   show: async (req, res) => {
     const offer = await Offer.findById(req.params.id)
       .populate("owner", "account.username account.avatar _id")
-      .select("-__v -createdAt -updatedAt");
+      .populate("transaction", "status");
 
     if (!offer) throw new NotFoundError(null, { modelName: "Offer" });
 
-    res.status(200).json(formatOffer(offer));
+    res.status(200).json(new OfferShowSerializer(offer).serialize());
   },
 
   // ** Update (PUT /offers/:id)**
@@ -76,6 +87,11 @@ const OfferController = {
     const filteredBody = _.pick(req.body, allowedFieldsForUpdate);
     const response = await updateWithParams(offer, filteredBody, req);
     res.status(200).json(response);
+  },
+
+  initiatePayment: async (req, res) => {
+    const response = await initiatePaymentForOffer(req.params.id, req.user._id);
+    res.json(response);
   },
 };
 

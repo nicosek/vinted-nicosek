@@ -9,6 +9,7 @@ const cors = require("cors");
 // Import des routes
 const userRoutes = require("./routes/user");
 const offerRoutes = require("./routes/offer");
+const paymentRoutes = require("./routes/payment");
 
 // Création de l'application Express
 const app = express();
@@ -21,6 +22,7 @@ app.post("/user/signup", asyncHandler(UserController.signup));
 app.post("/user/login", asyncHandler(UserController.login));
 
 app.use("/offers", offerRoutes);
+app.use("/payment", paymentRoutes);
 
 // Gestion des routes inconnues avec `NotFoundError`
 app.all("*", (req, res, next) => {

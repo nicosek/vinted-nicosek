@@ -37,9 +37,14 @@ const OfferSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    transaction: { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
   },
   baseSchemaOptions
 );
+
+OfferSchema.statics.status = function (transactionStatus) {
+  return transactionStatus === "succeeded" ? "sold" : "available";
+};
 
 const Offer = mongoose.model("Offer", OfferSchema);
 module.exports = Offer;

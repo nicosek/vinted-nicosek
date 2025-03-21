@@ -1,37 +1,29 @@
 const Offer = require("../../models/Offer");
-const formatOffer = require("../../utils/format_offer");
+const { buildFilters, buildSortOptions } = require("./filters");
 const {
-  buildFilters,
-  buildSortOptions,
-  getPaginationParams,
-} = require("../../utils/offer_filters");
+  offerTransactionAggregation,
+  offerOwnerAggregation,
+} = require("./aggregation");
+const { getPage, getLimit } = require("../../utils/pagination_helpers");
 
-const fetchFiltered = async (query) => {
+const fetchFilteredOffers = async (query) => {
   const filters = buildFilters(query);
   const sortQuery = buildSortOptions(query.sort);
-  const { resultsPerPage, currentPage, skip } = getPaginationParams(
-    query.page,
-    query.limit
-  );
 
-  // Exécuter `find()` et `countDocuments()` en parallèle
-  const [offers, totalOffers] = await Promise.all([
-    Offer.find(filters)
-      .populate("owner", "account.username account.avatar _id")
-      .sort(sortQuery)
-      .skip(skip)
-      .limit(resultsPerPage)
-      .select("-__v -createdAt -updatedAt"),
-    Offer.countDocuments(filters),
+  // ✅ Utilisation directe des helpers pour `page` et `limit`
+  const page = getPage(query);
+  const limit = getLimit(query);
+
+  const offers = await Offer.aggregate([
+    ...offerTransactionAggregation,
+    ...offerOwnerAggregation,
+    { $match: filters },
+    { $sort: sortQuery },
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
   ]);
 
-  return {
-    total: totalOffers,
-    count: offers.length,
-    page: currentPage,
-    totalPages: Math.ceil(totalOffers / resultsPerPage),
-    offers: offers.map(formatOffer), // Convertit les modèles Mongoose en objets JS purs
-  };
+  return offers;
 };
 
-module.exports = fetchFiltered;
+module.exports = fetchFilteredOffers;
